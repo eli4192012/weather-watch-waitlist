@@ -1,40 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LaunchCountdown } from "@/components/launch-countdown";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { getWaitlistCount } from "@/lib/waitlist";
 
-function getLaunchCountdown() {
-  const launchDate = new Date("2026-05-24T00:00:00-05:00");
-  const today = new Date();
-  const launchDay = new Date(
-    launchDate.getFullYear(),
-    launchDate.getMonth(),
-    launchDate.getDate(),
-  );
-  const currentDay = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
-  );
-  const millisecondsUntilLaunch = launchDay.getTime() - currentDay.getTime();
-  const daysUntilLaunch = Math.ceil(
-    millisecondsUntilLaunch / (1000 * 60 * 60 * 24),
-  );
-
-  if (daysUntilLaunch === 0) {
-    return "Releasing today!!";
-  }
-
-  if (daysUntilLaunch < 0) {
-    return "Available now";
-  }
-
-  return `${daysUntilLaunch} day${daysUntilLaunch === 1 ? "" : "s"}`;
-}
-
 export default async function Home() {
   const totalSignups = getWaitlistCount();
-  const launchCountdown = getLaunchCountdown();
 
   return (
     <main className="min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
@@ -101,7 +72,7 @@ export default async function Home() {
                     Release Window
                   </p>
                   <p className="mt-2 text-3xl font-semibold text-white">
-                    {launchCountdown}
+                    <LaunchCountdown />
                   </p>
                 </div>
               </div>
