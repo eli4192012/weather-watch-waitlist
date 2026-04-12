@@ -1,4 +1,5 @@
-import { db } from "@/lib/db";
+import fs from "node:fs";
+import path from "node:path";
 
 export type WaitlistEntry = {
   id: number;
@@ -7,9 +8,134 @@ export type WaitlistEntry = {
   created_at: string;
 };
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type GitHubFile = {
+  content: string;
+  sha: string;
+};
 
-export function addToWaitlist({
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const localDataDirectory = path.join(process.cwd(), "data");
+const localDataPath = path.join(localDataDirectory, "waitlist.json");
+const githubApiVersion = "2022-11-28";
+
+function getGitHubConfig() {
+  const token = process.env.GITHUB_WAITLIST_TOKEN;
+  const repo = process.env.GITHUB_WAITLIST_REPO;
+  const filePath = process.env.GITHUB_WAITLIST_PATH ?? "data/waitlist.json";
+
+  if (!token || !repo) {
+    return null;
+  }
+
+  return { token, repo, filePath };
+}
+
+function encodeBase64(value: string) {
+  return Buffer.from(value, "utf8").toString("base64");
+}
+
+function decodeBase64(value: string) {
+  return Buffer.from(value, "base64").toString("utf8");
+}
+
+function sortEntries(entries: WaitlistEntry[]) {
+  return [...entries].sort(
+    (first, second) =>
+      new Date(second.created_at).getTime() -
+      new Date(first.created_at).getTime(),
+  );
+}
+
+async function fetchGitHubWaitlist(): Promise<{
+  entries: WaitlistEntry[];
+  sha?: string;
+}> {
+  const config = getGitHubConfig();
+
+  if (!config) {
+    return { entries: readLocalWaitlist() };
+  }
+
+  const response = await fetch(
+    `https://api.github.com/repos/${config.repo}/contents/${config.filePath}`,
+    {
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${config.token}`,
+        "X-GitHub-Api-Version": githubApiVersion,
+      },
+      cache: "no-store",
+    },
+  );
+
+  if (response.status === 404) {
+    return { entries: [] };
+  }
+
+  if (!response.ok) {
+    throw new Error("Could not load the waitlist. Please try again.");
+  }
+
+  const file = (await response.json()) as GitHubFile;
+  const decoded = decodeBase64(file.content.replaceAll("\n", ""));
+  const entries = JSON.parse(decoded) as WaitlistEntry[];
+
+  return { entries: sortEntries(entries), sha: file.sha };
+}
+
+async function saveGitHubWaitlist(entries: WaitlistEntry[], sha?: string) {
+  const config = getGitHubConfig();
+
+  if (!config) {
+    writeLocalWaitlist(entries);
+    return;
+  }
+
+  const response = await fetch(
+    `https://api.github.com/repos/${config.repo}/contents/${config.filePath}`,
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${config.token}`,
+        "Content-Type": "application/json",
+        "X-GitHub-Api-Version": githubApiVersion,
+      },
+      body: JSON.stringify({
+        message: "Update waitlist signups",
+        content: encodeBase64(`${JSON.stringify(sortEntries(entries), null, 2)}\n`),
+        sha,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Could not save your signup. Please try again.");
+  }
+}
+
+function readLocalWaitlist() {
+  if (!fs.existsSync(localDataPath)) {
+    return [];
+  }
+
+  const contents = fs.readFileSync(localDataPath, "utf8");
+  return sortEntries(JSON.parse(contents) as WaitlistEntry[]);
+}
+
+function writeLocalWaitlist(entries: WaitlistEntry[]) {
+  if (!fs.existsSync(localDataDirectory)) {
+    fs.mkdirSync(localDataDirectory, { recursive: true });
+  }
+
+  fs.writeFileSync(
+    localDataPath,
+    `${JSON.stringify(sortEntries(entries), null, 2)}\n`,
+    "utf8",
+  );
+}
+
+export async function addToWaitlist({
   name,
   email: rawEmail,
 }: {
@@ -27,31 +153,32 @@ export function addToWaitlist({
     throw new Error("Please enter a valid email address.");
   }
 
-  try {
-    db.prepare(
-      "INSERT INTO waitlist_entries (name, email) VALUES (@name, @email)",
-    ).run({ name: cleanName, email });
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("UNIQUE")) {
-      throw new Error("That email is already on the waitlist.");
-    }
+  const { entries, sha } = await fetchGitHubWaitlist();
 
-    throw error;
+  if (entries.some((entry) => entry.email === email)) {
+    throw new Error("That email is already on the waitlist.");
   }
+
+  await saveGitHubWaitlist(
+    [
+      {
+        id: Date.now(),
+        name: cleanName,
+        email,
+        created_at: new Date().toISOString(),
+      },
+      ...entries,
+    ],
+    sha,
+  );
 }
 
-export function getWaitlistCount() {
-  const row = db
-    .prepare("SELECT COUNT(*) as count FROM waitlist_entries")
-    .get() as { count: number };
-
-  return row.count;
+export async function getWaitlistCount() {
+  const { entries } = await fetchGitHubWaitlist();
+  return entries.length;
 }
 
-export function getWaitlistEntries() {
-  return db
-    .prepare(
-      "SELECT id, name, email, created_at FROM waitlist_entries ORDER BY datetime(created_at) DESC",
-    )
-    .all() as WaitlistEntry[];
+export async function getWaitlistEntries() {
+  const { entries } = await fetchGitHubWaitlist();
+  return entries;
 }

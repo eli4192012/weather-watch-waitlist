@@ -12,7 +12,7 @@ export default async function AdminPage() {
     return <AdminGate />;
   }
 
-  const entries = getWaitlistEntries();
+  const entries = await getWaitlistEntries();
 
   return (
     <main className="min-h-screen bg-[var(--bg)] px-6 py-8 text-[var(--text)] sm:px-10">

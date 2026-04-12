@@ -5,7 +5,7 @@ import { WaitlistForm } from "@/components/waitlist-form";
 import { getWaitlistCount } from "@/lib/waitlist";
 
 export default async function Home() {
-  const totalSignups = getWaitlistCount();
+  const totalSignups = await getWaitlistCount();
 
   return (
     <main className="min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">

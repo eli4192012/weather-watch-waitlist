@@ -30,7 +30,7 @@ export async function joinWaitlist(
   }
 
   try {
-    addToWaitlist({ name, email });
+    await addToWaitlist({ name, email });
   } catch (error) {
     if (error instanceof Error) {
       return { error: error.message };
