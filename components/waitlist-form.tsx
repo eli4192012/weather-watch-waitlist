@@ -23,6 +23,19 @@ export function WaitlistForm() {
     >
       <label className="block">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.26em] text-white/48">
+          Name
+        </span>
+        <input
+          type="text"
+          name="name"
+          required
+          placeholder="Your name"
+          className="h-14 w-full rounded-2xl border border-white/12 bg-white/6 px-4 text-base text-white outline-none transition placeholder:text-white/32 focus:border-[var(--secondary)] focus:bg-white/10"
+        />
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.26em] text-white/48">
           Email Address
         </span>
         <input

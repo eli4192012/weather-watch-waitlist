@@ -18,14 +18,19 @@ export async function joinWaitlist(
   _prevState: WaitlistFormState,
   formData: FormData,
 ): Promise<WaitlistFormState> {
+  const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
+
+  if (!name) {
+    return { error: "Add your name first." };
+  }
 
   if (!email) {
     return { error: "Add an email address first." };
   }
 
   try {
-    addToWaitlist(email);
+    addToWaitlist({ name, email });
   } catch (error) {
     if (error instanceof Error) {
       return { error: error.message };

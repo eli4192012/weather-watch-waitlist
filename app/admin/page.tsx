@@ -73,7 +73,8 @@ export default async function AdminPage() {
         </section>
 
         <section className="mt-8 overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/30">
-          <div className="grid grid-cols-[1.4fr_1fr] gap-4 border-b border-white/10 px-5 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-white/42 sm:grid-cols-[2fr_1fr_1fr]">
+          <div className="grid grid-cols-[1fr_1.4fr] gap-4 border-b border-white/10 px-5 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-white/42 sm:grid-cols-[1fr_1.6fr_1fr_1fr]">
+            <span>Name</span>
             <span>Email</span>
             <span className="hidden sm:block">Joined</span>
             <span>Source</span>
@@ -84,9 +85,12 @@ export default async function AdminPage() {
               entries.map((entry) => (
                 <div
                   key={entry.id}
-                  className="grid grid-cols-[1.4fr_1fr] gap-4 border-b border-white/6 px-5 py-4 text-sm text-white/78 last:border-b-0 sm:grid-cols-[2fr_1fr_1fr]"
+                  className="grid grid-cols-[1fr_1.4fr] gap-4 border-b border-white/6 px-5 py-4 text-sm text-white/78 last:border-b-0 sm:grid-cols-[1fr_1.6fr_1fr_1fr]"
                 >
-                  <span className="truncate text-white">{entry.email}</span>
+                  <span className="truncate text-white">
+                    {entry.name || "No name"}
+                  </span>
+                  <span className="truncate">{entry.email}</span>
                   <span className="hidden sm:block">
                     {new Intl.DateTimeFormat("en-US", {
                       dateStyle: "medium",
