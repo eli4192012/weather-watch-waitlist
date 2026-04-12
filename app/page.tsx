@@ -58,6 +58,13 @@ export default async function Home() {
                 sky starts acting strange.
               </p>
 
+              <p className="mt-5 max-w-xl rounded-3xl border border-white/10 bg-white/6 px-5 py-4 text-sm leading-6 text-white/76 backdrop-blur">
+                Join before launch and you&apos;ll get one free month of all
+                paid features when Weather Watch releases. No emails will be
+                sent until it&apos;s time to claim that free month; this list is
+                mainly to estimate how many users will be ready on launch day.
+              </p>
+
               <div className="mt-8 flex flex-wrap gap-8">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/46">
@@ -96,8 +103,9 @@ export default async function Home() {
                 </div>
 
                 <p className="mt-4 max-w-lg text-sm leading-6 text-white/70">
-                  Drop your email and I&apos;ll keep you posted for launch,
-                  beta openings, and first-access invites.
+                  Drop your email to reserve your free month of paid features.
+                  You won&apos;t get emails before launch; this helps measure how
+                  many Weather Watch users are ready on day one.
                 </p>
 
                 <div className="mt-8">
@@ -118,9 +126,9 @@ export default async function Home() {
                     </p>
                   </div>
                   <div>
-                    <p className="font-semibold text-white">Private admin</p>
+                    <p className="font-semibold text-white">No early emails</p>
                     <p className="mt-1">
-                      Review signups anytime from your protected admin view.
+                      You&apos;ll only hear from us when your free month is ready.
                     </p>
                   </div>
                 </div>
