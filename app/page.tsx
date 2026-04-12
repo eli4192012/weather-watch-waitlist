@@ -1,65 +1,133 @@
 import Image from "next/image";
+import Link from "next/link";
+import { WaitlistForm } from "@/components/waitlist-form";
+import { getWaitlistCount } from "@/lib/waitlist";
 
-export default function Home() {
+export default async function Home() {
+  const totalSignups = getWaitlistCount();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
+      <section className="relative isolate min-h-screen">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(199,46,53,0.35),_transparent_28%),radial-gradient(circle_at_80%_18%,_rgba(43,96,202,0.28),_transparent_30%),linear-gradient(135deg,_#03050a_10%,_#07111f_45%,_#020304_100%)]" />
+        <div className="absolute inset-0 opacity-60 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:72px_72px]" />
+        <div className="absolute -left-32 top-20 h-96 w-96 rounded-full border border-[rgba(43,96,202,0.28)]" />
+        <div className="absolute right-[-7rem] top-1/3 h-[34rem] w-[34rem] rounded-full border border-[rgba(199,46,53,0.24)]" />
+
+        <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-6 sm:px-10 lg:px-12">
+          <header className="flex items-center justify-between py-3">
+            <div className="flex items-center gap-4">
+              <div className="rounded-full border border-white/10 bg-black/25 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-white/68 backdrop-blur">
+                Launching May 2026
+              </div>
+            </div>
+            <Link
+              href="/admin"
+              className="rounded-full border border-white/12 px-4 py-2 text-sm text-white/82 transition hover:border-white/30 hover:text-white"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Admin
+            </Link>
+          </header>
+
+          <div className="grid flex-1 items-center gap-14 py-8 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="max-w-2xl">
+              <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/6 px-4 py-2 backdrop-blur">
+                <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[0_0_16px_rgba(199,46,53,0.85)]" />
+                <span className="text-sm text-white/78">
+                  Severe weather intelligence, simplified
+                </span>
+              </div>
+
+              <Image
+                src="/weather-watch-logo.png"
+                alt="Weather Watch logo"
+                width={460}
+                height={220}
+                priority
+                className="mb-10 h-auto w-[min(100%,420px)]"
+              />
+
+              <h1 className="max-w-3xl font-display text-5xl leading-[0.9] tracking-[-0.05em] text-white sm:text-6xl lg:text-7xl">
+                Know the storm before it knows you.
+              </h1>
+
+              <p className="mt-6 max-w-xl text-base leading-7 text-white/72 sm:text-lg">
+                Weather Watch is a fast, focused weather app built for people
+                who want sharp alerts, cleaner radar, and less noise when the
+                sky starts acting strange.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-8">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/46">
+                    Waitlist
+                  </p>
+                  <p className="mt-2 text-3xl font-semibold text-white">
+                    {totalSignups.toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/46">
+                    Release Window
+                  </p>
+                  <p className="mt-2 text-3xl font-semibold text-white">
+                    5 Weeks
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative lg:justify-self-end">
+              <div className="absolute inset-x-8 bottom-[-3rem] top-8 rounded-[2.5rem] bg-[radial-gradient(circle,_rgba(43,96,202,0.3),_transparent_62%)] blur-3xl" />
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-black/38 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/46">
+                      Early Access
+                    </p>
+                    <h2 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-white">
+                      Join the Weather Watch waitlist
+                    </h2>
+                  </div>
+                  <div className="hidden rounded-full border border-[rgba(43,96,202,0.55)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--secondary)] sm:block">
+                    Radar Ready
+                  </div>
+                </div>
+
+                <p className="mt-4 max-w-lg text-sm leading-6 text-white/70">
+                  Drop your email and I&apos;ll keep you posted for launch,
+                  beta openings, and first-access invites.
+                </p>
+
+                <div className="mt-8">
+                  <WaitlistForm />
+                </div>
+
+                <div className="mt-10 grid gap-4 border-t border-white/10 pt-6 text-sm text-white/68 sm:grid-cols-3">
+                  <div>
+                    <p className="font-semibold text-white">Sharp alerts</p>
+                    <p className="mt-1">
+                      Built to surface the stuff that actually matters.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white">Clean radar</p>
+                    <p className="mt-1">
+                      Fast visuals without the cluttered forecast maze.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white">Private admin</p>
+                    <p className="mt-1">
+                      Review signups anytime from your protected admin view.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
